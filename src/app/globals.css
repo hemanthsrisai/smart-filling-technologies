@@ -1,26 +1,352 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ─────────────────────────────────────────────────
+   Smart Filling Technologies — Enhanced Design System
+   Merging industrial precision with holographic dark theme
+   from the Lovable design reference.
+   ───────────────────────────────────────────────── */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Brand Colors */
+  --color-steel-50: #F6F7F8;
+  --color-steel-100: #E8EAED;
+  --color-steel-200: #D1D5DB;
+  --color-steel-300: #9CA3AF;
+  --color-steel-400: #6B7280;
+  --color-steel-500: #4B5563;
+  --color-steel-600: #374151;
+  --color-steel-700: #1F2937;
+  --color-steel-800: #1a1f27;
+  --color-graphite: rgba(10, 5, 25, 0.4);
+  --color-graphite-light: rgba(15, 10, 35, 0.5);
+
+  --color-primary: #1E5AA8;
+  --color-primary-dark: #174a8c;
+  --color-primary-light: #2a6dba;
+
+  --color-accent: #D98E3B;
+  --color-accent-dark: #c47a2e;
+  --color-accent-light: #e4a35a;
+
+  /* Neon / Holographic tokens  */
+  --color-neon-blue: #5b9cf5;
+  --color-neon-violet: #a78bfa;
+  --color-neon-cyan: #67e8f9;
+
+  /* Semantic */
+  --color-background: var(--color-steel-50);
+  --color-foreground: var(--color-graphite);
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
+  --color-border: #E5E7EB;
+  --color-border-strong: #D1D5DB;
+
+  /* Fonts */
+  --font-heading: var(--font-space-grotesk), system-ui, sans-serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  /* Spacing Scale */
+  --spacing-section: 5rem;
+  --spacing-section-mobile: 3rem;
+
+  /* Container */
+  --container-max: 1280px;
+  --container-padding: 1rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@media (min-width: 768px) {
+  @theme inline {
+    --container-padding: 2rem;
+    --spacing-section: 6rem;
   }
 }
 
+/* ─────────────────────────────────────────────────
+   CSS Custom Properties for gradients & effects
+   ───────────────────────────────────────────────── */
+
+:root {
+  --gradient-iri: linear-gradient(
+    110deg,
+    #67e8f9,
+    #5b9cf5,
+    #a78bfa,
+    #c4b5fd
+  );
+  --gradient-silver: linear-gradient(180deg, #f0f0f2, #9ca3af);
+  --shadow-glow: 0 0 40px -8px rgba(91, 156, 245, 0.45);
+  --shadow-soft: 0 20px 50px -20px rgba(20, 24, 28, 0.6);
+}
+
+/* ─────────────────────────────────────────────────
+   Base Styles
+   ───────────────────────────────────────────────── */
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(-45deg, #080414, #2a0a4a, #041f2e, #1a0b2e);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ─────────────────────────────────────────────────
+   Focus States (Accessibility)
+   ───────────────────────────────────────────────── */
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ─────────────────────────────────────────────────
+   Reduced Motion
+   ───────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────
+   Scrollbar Styling
+   ───────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-steel-300);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-steel-400);
+}
+
+/* ─────────────────────────────────────────────────
+   Utility Classes
+   ───────────────────────────────────────────────── */
+
+.section-container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
+/* Horizontal scroll snap for mobile carousels */
+.scroll-snap-x {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scroll-snap-x > * {
+  scroll-snap-align: start;
+}
+
+/* Hide scrollbar for carousels */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─────────────────────────────────────────────────
+   Iridescent / Holographic Effects 
+   ───────────────────────────────────────────────── */
+
+/* Iridescent text gradient */
+.text-iri {
+  background: var(--gradient-iri);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: iri-shift 6s linear infinite;
+}
+
+/* Silver metallic text */
+.text-silver {
+  background: var(--gradient-silver);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Iridescent border */
+.border-iri {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(#14181C, #14181C) padding-box,
+    var(--gradient-iri) border-box;
+}
+
+/* Glow shadow */
+.glow {
+  box-shadow: var(--shadow-glow);
+}
+
+/* Holographic background overlay */
+.holo-bg {
+  position: relative;
+}
+
+.holo-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-iri);
+  background-size: 300% 300%;
+  opacity: 0.08;
+  animation: iri-shift 14s linear infinite;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ─────────────────────────────────────────────────
+   Keyframe Animations
+   ───────────────────────────────────────────────── */
+
+@keyframes iri-shift {
+  to {
+    background-position: 200% center;
+  }
+}
+
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes screw-move {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(180deg);
+  }
+  100% {
+    transform: translateY(0) rotate(360deg);
+  }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-float {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+.animate-spin-reverse {
+  animation: spin-reverse 25s linear infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-screw {
+  animation: screw-move 4s ease-in-out infinite;
+}
+
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+  display: flex;
+  width: max-content;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* ─────────────────────────────────────────────────
+   Video container aspect ratio
+   ───────────────────────────────────────────────── */
+
+.video-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 */
+  overflow: hidden;
+  border-radius: 1rem;
+}
+
+.video-container video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
