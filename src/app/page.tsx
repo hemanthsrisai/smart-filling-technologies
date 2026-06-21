@@ -203,14 +203,14 @@ export default function HomePage() {
                 <Link 
                   key={`w1-${product.slug}-${i}`} 
                   href={`/products/${product.slug}`} 
-                  className="relative w-48 h-48 md:w-64 md:h-64 shrink-0 rounded-2xl overflow-hidden bg-graphite-light p-4 border border-steel-700/50 hover:border-neon-cyan/50 transition-all glow hover:-translate-y-1"
+                  className="relative w-48 h-48 md:w-64 md:h-64 shrink-0 rounded-2xl overflow-hidden bg-graphite-light p-4 border border-steel-700/50 hover:border-neon-cyan/50 transition-all hover:-translate-y-1"
                 >
                   <Image
                     src={product.image || '/images/sft-logo.jpg'}
                     alt={product.name}
                     fill
                     sizes="(max-width: 768px) 192px, 256px"
-                    className="object-contain p-4 drop-shadow-2xl"
+                    className="object-contain p-4"
                   />
                 </Link>
               ))}
@@ -221,14 +221,14 @@ export default function HomePage() {
                 <Link 
                   key={`w2-${product.slug}-${i}`} 
                   href={`/products/${product.slug}`} 
-                  className="relative w-48 h-48 md:w-64 md:h-64 shrink-0 rounded-2xl overflow-hidden bg-graphite-light p-4 border border-steel-700/50 hover:border-neon-cyan/50 transition-all glow hover:-translate-y-1"
+                  className="relative w-48 h-48 md:w-64 md:h-64 shrink-0 rounded-2xl overflow-hidden bg-graphite-light p-4 border border-steel-700/50 hover:border-neon-cyan/50 transition-all hover:-translate-y-1"
                 >
                   <Image
                     src={product.image || '/images/sft-logo.jpg'}
                     alt={product.name}
                     fill
                     sizes="(max-width: 768px) 192px, 256px"
-                    className="object-contain p-4 drop-shadow-2xl"
+                    className="object-contain p-4"
                   />
                 </Link>
               ))}
@@ -406,7 +406,7 @@ export default function HomePage() {
               {/* Wrapper 1 */}
               <div className="flex gap-5 pr-5 shrink-0">
                 {[...industryIcons, ...industryIcons].map(({ icon: Icon, title, desc }, idx) => (
-                  <div key={`w1-${title}-${idx}`} className="w-[280px] md:w-[320px] shrink-0 holo-bg rounded-2xl border border-steel-700/50 bg-graphite-light p-6 text-center md:text-left flex flex-col h-full hover:border-neon-blue/50 transition-colors glow">
+                  <div key={`w1-${title}-${idx}`} className="w-[280px] md:w-[320px] shrink-0 holo-bg rounded-2xl border border-steel-700/50 bg-graphite-light p-6 text-center md:text-left flex flex-col h-full hover:border-neon-blue/50 transition-colors">
                     <div className="w-12 h-12 rounded-xl bg-neon-blue/10 flex items-center justify-center mx-auto md:mx-0 mb-4 shrink-0">
                       <Icon className="w-6 h-6 text-neon-blue" />
                     </div>
@@ -418,7 +418,7 @@ export default function HomePage() {
               {/* Wrapper 2 (Exact Duplicate) */}
               <div className="flex gap-5 pr-5 shrink-0">
                 {[...industryIcons, ...industryIcons].map(({ icon: Icon, title, desc }, idx) => (
-                  <div key={`w2-${title}-${idx}`} className="w-[280px] md:w-[320px] shrink-0 holo-bg rounded-2xl border border-steel-700/50 bg-graphite-light p-6 text-center md:text-left flex flex-col h-full hover:border-neon-blue/50 transition-colors glow">
+                  <div key={`w2-${title}-${idx}`} className="w-[280px] md:w-[320px] shrink-0 holo-bg rounded-2xl border border-steel-700/50 bg-graphite-light p-6 text-center md:text-left flex flex-col h-full hover:border-neon-blue/50 transition-colors">
                     <div className="w-12 h-12 rounded-xl bg-neon-blue/10 flex items-center justify-center mx-auto md:mx-0 mb-4 shrink-0">
                       <Icon className="w-6 h-6 text-neon-blue" />
                     </div>
