@@ -18,8 +18,8 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-const heroWords = ["Precision", "Filling", "&", "Packing", "Machinery"];
-const heroWords2 = ["Engineered", "in", "India"];
+const heroWords = ["Smart", "Filling"];
+const heroWords2 = ["Technologies"];
 
 const lineSteps = [
   { t: "Feed", d: "Turn tables & conveyors orient and stage bottles into the line.", num: "01", icon: ArrowDownToLine, color: "text-neon-blue", borderColor: "border-neon-blue", hoverBorder: "hover:border-neon-blue/50" },
@@ -80,7 +80,7 @@ export default function HomePage() {
               transition={{ duration: 0.7, ease }}
               className="mb-5 text-sm md:text-base font-bold uppercase tracking-[0.35em] text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-violet"
             >
-              Smart Filling Technologies
+              Precision Filling & Packaging Machinery
             </motion.p>
 
             {/* Headline — word-by-word stagger */}
@@ -117,7 +117,7 @@ export default function HomePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.9, duration: 0.8, ease }}
             >
-              Stainless-steel auger, bottle, powder and pouch lines — engineered for
+              Engineered in India. Stainless-steel auger, bottle, powder and pouch lines — built for 
               pharma, pesticides and food production. Trusted across Asia & South Africa.
             </motion.p>
 
@@ -255,24 +255,46 @@ export default function HomePage() {
 
           {/* Aesthetic Vertical Flow Diagram */}
           <div className="relative max-w-4xl mx-auto py-4 md:py-10">
-            {/* Center Line (Animated Draw Down) */}
-            <motion.div 
-              initial={{ height: 0 }}
-              whileInView={{ height: "100%" }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 1.5, ease: "easeInOut" }}
-              className="absolute left-[28px] md:left-1/2 top-0 w-1 bg-gradient-to-b from-neon-cyan to-neon-violet transform md:-translate-x-1/2 rounded-full overflow-hidden"
-            >
-               {/* Moving Laser Pulse Animation inside the drawn line */}
-               <motion.div 
-                 animate={{ top: ["-20%", "120%"] }}
-                 transition={{ duration: 2.5, ease: "linear", repeat: Infinity }}
-                 className="absolute left-0 right-0 h-40 bg-white opacity-80 blur-[2px]" 
-               />
-            </motion.div>
             
             {/* Faded Background Line (Static Track) */}
             <div className="absolute left-[28px] md:left-1/2 top-0 bottom-0 w-1 bg-steel-700/30 transform md:-translate-x-1/2 rounded-full" />
+            
+            {/* Electrifying Flow SVG */}
+            <div className="absolute left-[24px] md:left-1/2 top-0 bottom-0 w-3 transform md:-translate-x-1/2 overflow-hidden pointer-events-none">
+               <svg className="w-full h-full" preserveAspectRatio="none">
+                 <defs>
+                   <linearGradient id="electric-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                     <stop offset="0%" stopColor="#00f3ff" />
+                     <stop offset="50%" stopColor="#ffffff" />
+                     <stop offset="100%" stopColor="#9d00ff" />
+                   </linearGradient>
+                   <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                     <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                     <feMerge>
+                       <feMergeNode in="coloredBlur"/>
+                       <feMergeNode in="SourceGraphic"/>
+                     </feMerge>
+                   </filter>
+                 </defs>
+                 <motion.line 
+                   x1="50%" y1="0" x2="50%" y2="100%" 
+                   stroke="url(#electric-grad)" 
+                   strokeWidth="2"
+                   strokeDasharray="40 60"
+                   filter="url(#glow)"
+                   animate={{ strokeDashoffset: [200, 0] }}
+                   transition={{ repeat: Infinity, duration: 0.6, ease: "linear" }}
+                 />
+                 <motion.line 
+                   x1="50%" y1="0" x2="50%" y2="100%" 
+                   stroke="#ffffff" 
+                   strokeWidth="1"
+                   strokeDasharray="10 90"
+                   animate={{ strokeDashoffset: [200, 0] }}
+                   transition={{ repeat: Infinity, duration: 0.3, ease: "linear" }}
+                 />
+               </svg>
+            </div>
             
             <StaggerContainer staggerDelay={0.3} className="flex flex-col gap-12 md:gap-0 relative z-10">
               {lineSteps.map((step, index) => {
