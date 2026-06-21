@@ -39,8 +39,6 @@ const valueProps = [
   { icon: Cpu, title: "PLC + HMI Control", desc: "Programmable logic controllers with 4.3\" to 7\" HMI touchscreens." },
   { icon: Cog, title: "Servo Precision", desc: "750W servo drive systems deliver repeatable, high-accuracy fills." },
   { icon: Award, title: "Warranty Included", desc: "All machines ship with manufacturer warranty for peace of mind." },
-  { icon: Package, title: "100% Against Delivery", desc: "No advance payment required — full payment only on delivery." },
-  { icon: Clock, title: "5–6 Week Delivery", desc: "Manufacturing in 5 to 6 weeks, or ready stock availability." },
 ];
 
 export default function HomePage() {
