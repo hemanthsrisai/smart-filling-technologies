@@ -204,7 +204,7 @@ export default function HomePage() {
                 className="relative w-48 h-48 md:w-64 md:h-64 shrink-0 rounded-2xl overflow-hidden bg-graphite-light p-4 border border-steel-700/50 hover:border-neon-cyan/50 transition-all glow hover:-translate-y-1"
               >
                 <Image
-                  src={product.images[0]}
+                  src={product.images?.[0] || '/images/sft-logo.jpg'}
                   alt={product.name}
                   fill
                   sizes="(max-width: 768px) 192px, 256px"
