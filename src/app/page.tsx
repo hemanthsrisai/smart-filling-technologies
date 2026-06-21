@@ -195,24 +195,44 @@ export default function HomePage() {
         <div className="section-container mb-6 text-center">
           <p className="text-xs uppercase tracking-[0.3em] text-neon-blue font-semibold">Our Engineering Excellence</p>
         </div>
-        <div className="relative flex overflow-x-hidden w-full group">
-          {/* We duplicate the products array a few times to ensure the marquee fills wide screens smoothly */}
-          <div className="animate-marquee-reverse gap-6 px-3 items-center">
-            {[...products, ...products, ...products, ...products].map((product, i) => (
-              <Link 
-                key={`${product.slug}-${i}`} 
-                href={`/products/${product.slug}`} 
-                className="relative w-48 h-48 md:w-64 md:h-64 shrink-0 rounded-2xl overflow-hidden bg-graphite-light p-4 border border-steel-700/50 hover:border-neon-cyan/50 transition-all glow hover:-translate-y-1"
-              >
-                <Image
-                  src={product.image || '/images/sft-logo.jpg'}
-                  alt={product.name}
-                  fill
-                  sizes="(max-width: 768px) 192px, 256px"
-                  className="object-contain p-4 drop-shadow-2xl"
-                />
-              </Link>
-            ))}
+        <div className="relative flex overflow-x-hidden w-full group py-2">
+          <div className="animate-marquee-reverse">
+            {/* Wrapper 1 */}
+            <div className="flex gap-6 pr-6">
+              {[...products, ...products].map((product, i) => (
+                <Link 
+                  key={`w1-${product.slug}-${i}`} 
+                  href={`/products/${product.slug}`} 
+                  className="relative w-48 h-48 md:w-64 md:h-64 shrink-0 rounded-2xl overflow-hidden bg-graphite-light p-4 border border-steel-700/50 hover:border-neon-cyan/50 transition-all glow hover:-translate-y-1"
+                >
+                  <Image
+                    src={product.image || '/images/sft-logo.jpg'}
+                    alt={product.name}
+                    fill
+                    sizes="(max-width: 768px) 192px, 256px"
+                    className="object-contain p-4 drop-shadow-2xl"
+                  />
+                </Link>
+              ))}
+            </div>
+            {/* Wrapper 2 (Exact Duplicate for seamless loop) */}
+            <div className="flex gap-6 pr-6">
+              {[...products, ...products].map((product, i) => (
+                <Link 
+                  key={`w2-${product.slug}-${i}`} 
+                  href={`/products/${product.slug}`} 
+                  className="relative w-48 h-48 md:w-64 md:h-64 shrink-0 rounded-2xl overflow-hidden bg-graphite-light p-4 border border-steel-700/50 hover:border-neon-cyan/50 transition-all glow hover:-translate-y-1"
+                >
+                  <Image
+                    src={product.image || '/images/sft-logo.jpg'}
+                    alt={product.name}
+                    fill
+                    sizes="(max-width: 768px) 192px, 256px"
+                    className="object-contain p-4 drop-shadow-2xl"
+                  />
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -382,16 +402,31 @@ export default function HomePage() {
           </AnimatedSection>
 
           <div className="relative flex overflow-x-hidden w-full group py-4">
-            <div className="animate-marquee-reverse gap-5 px-2.5 items-stretch">
-              {[...industryIcons, ...industryIcons, ...industryIcons].map(({ icon: Icon, title, desc }, idx) => (
-                <div key={`${title}-${idx}`} className="w-[280px] md:w-[320px] shrink-0 holo-bg rounded-2xl border border-steel-700/50 bg-graphite-light p-6 text-center md:text-left flex flex-col h-full hover:border-neon-blue/50 transition-colors glow">
-                  <div className="w-12 h-12 rounded-xl bg-neon-blue/10 flex items-center justify-center mx-auto md:mx-0 mb-4 shrink-0">
-                    <Icon className="w-6 h-6 text-neon-blue" />
+            <div className="animate-marquee-reverse items-stretch">
+              {/* Wrapper 1 */}
+              <div className="flex gap-5 pr-5">
+                {[...industryIcons, ...industryIcons].map(({ icon: Icon, title, desc }, idx) => (
+                  <div key={`w1-${title}-${idx}`} className="w-[280px] md:w-[320px] shrink-0 holo-bg rounded-2xl border border-steel-700/50 bg-graphite-light p-6 text-center md:text-left flex flex-col h-full hover:border-neon-blue/50 transition-colors glow">
+                    <div className="w-12 h-12 rounded-xl bg-neon-blue/10 flex items-center justify-center mx-auto md:mx-0 mb-4 shrink-0">
+                      <Icon className="w-6 h-6 text-neon-blue" />
+                    </div>
+                    <h3 className="font-heading font-bold text-white mb-2 shrink-0">{title}</h3>
+                    <p className="text-steel-400 text-sm leading-relaxed flex-grow">{desc}</p>
                   </div>
-                  <h3 className="font-heading font-bold text-white mb-2 shrink-0">{title}</h3>
-                  <p className="text-steel-400 text-sm leading-relaxed flex-grow">{desc}</p>
-                </div>
-              ))}
+                ))}
+              </div>
+              {/* Wrapper 2 (Exact Duplicate) */}
+              <div className="flex gap-5 pr-5">
+                {[...industryIcons, ...industryIcons].map(({ icon: Icon, title, desc }, idx) => (
+                  <div key={`w2-${title}-${idx}`} className="w-[280px] md:w-[320px] shrink-0 holo-bg rounded-2xl border border-steel-700/50 bg-graphite-light p-6 text-center md:text-left flex flex-col h-full hover:border-neon-blue/50 transition-colors glow">
+                    <div className="w-12 h-12 rounded-xl bg-neon-blue/10 flex items-center justify-center mx-auto md:mx-0 mb-4 shrink-0">
+                      <Icon className="w-6 h-6 text-neon-blue" />
+                    </div>
+                    <h3 className="font-heading font-bold text-white mb-2 shrink-0">{title}</h3>
+                    <p className="text-steel-400 text-sm leading-relaxed flex-grow">{desc}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
