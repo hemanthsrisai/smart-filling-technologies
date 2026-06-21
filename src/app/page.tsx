@@ -195,10 +195,10 @@ export default function HomePage() {
         <div className="section-container mb-6 text-center">
           <p className="text-xs uppercase tracking-[0.3em] text-neon-blue font-semibold">Our Engineering Excellence</p>
         </div>
-        <div className="relative flex overflow-x-hidden w-full group py-2">
+        <div className="relative w-full overflow-hidden py-2">
           <div className="animate-marquee-reverse">
             {/* Wrapper 1 */}
-            <div className="flex gap-6 pr-6">
+            <div className="flex gap-6 pr-6 shrink-0">
               {[...products, ...products].map((product, i) => (
                 <Link 
                   key={`w1-${product.slug}-${i}`} 
@@ -216,7 +216,7 @@ export default function HomePage() {
               ))}
             </div>
             {/* Wrapper 2 (Exact Duplicate for seamless loop) */}
-            <div className="flex gap-6 pr-6">
+            <div className="flex gap-6 pr-6 shrink-0">
               {[...products, ...products].map((product, i) => (
                 <Link 
                   key={`w2-${product.slug}-${i}`} 
@@ -401,10 +401,10 @@ export default function HomePage() {
             </h2>
           </AnimatedSection>
 
-          <div className="relative flex overflow-x-hidden w-full group py-4">
+          <div className="relative w-full overflow-hidden py-4">
             <div className="animate-marquee-reverse items-stretch">
               {/* Wrapper 1 */}
-              <div className="flex gap-5 pr-5">
+              <div className="flex gap-5 pr-5 shrink-0">
                 {[...industryIcons, ...industryIcons].map(({ icon: Icon, title, desc }, idx) => (
                   <div key={`w1-${title}-${idx}`} className="w-[280px] md:w-[320px] shrink-0 holo-bg rounded-2xl border border-steel-700/50 bg-graphite-light p-6 text-center md:text-left flex flex-col h-full hover:border-neon-blue/50 transition-colors glow">
                     <div className="w-12 h-12 rounded-xl bg-neon-blue/10 flex items-center justify-center mx-auto md:mx-0 mb-4 shrink-0">
@@ -416,7 +416,7 @@ export default function HomePage() {
                 ))}
               </div>
               {/* Wrapper 2 (Exact Duplicate) */}
-              <div className="flex gap-5 pr-5">
+              <div className="flex gap-5 pr-5 shrink-0">
                 {[...industryIcons, ...industryIcons].map(({ icon: Icon, title, desc }, idx) => (
                   <div key={`w2-${title}-${idx}`} className="w-[280px] md:w-[320px] shrink-0 holo-bg rounded-2xl border border-steel-700/50 bg-graphite-light p-6 text-center md:text-left flex flex-col h-full hover:border-neon-blue/50 transition-colors glow">
                     <div className="w-12 h-12 rounded-xl bg-neon-blue/10 flex items-center justify-center mx-auto md:mx-0 mb-4 shrink-0">

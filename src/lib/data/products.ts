@@ -15,7 +15,7 @@ export interface ProductSpec {
 export interface Product {
   slug: string;
   name: string;
-  brand: string;
+  brand?: string;
   category: ProductCategory;
   categoryLabel: string;
   shortDescription: string;

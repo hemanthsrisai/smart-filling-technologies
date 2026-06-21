@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const product = getProductBySlug(slug);
   if (!product) return { title: "Product Not Found" };
   return {
-    title: `${product.name} — ${product.brand}`,
+    title: `${product.name} — ${product.brand || "Smart Filling Technologies"}`,
     description: product.description,
     openGraph: {
       title: `${product.name} — Smart Filling Technologies`,
@@ -54,7 +54,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             <div className="flex flex-col justify-center">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-xs uppercase tracking-wider text-steel-400 font-medium bg-steel-800 px-2.5 py-1 rounded">{product.categoryLabel}</span>
-                <span className="text-xs uppercase tracking-wider text-neon-violet font-semibold bg-neon-violet/10 px-2.5 py-1 rounded">{product.brand}</span>
+                {product.brand && (
+                  <span className="text-xs uppercase tracking-wider text-neon-violet font-semibold bg-neon-violet/10 px-2.5 py-1 rounded">{product.brand}</span>
+                )}
               </div>
               <h1 className="font-heading font-bold text-2xl md:text-3xl lg:text-4xl text-white mb-3 leading-tight">{product.name}</h1>
               <p className="text-steel-400 text-base leading-relaxed mb-6">{product.description}</p>
