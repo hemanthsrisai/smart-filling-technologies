@@ -80,7 +80,7 @@ export default function HomePage() {
               transition={{ duration: 0.7, ease }}
               className="mb-5 text-xs uppercase tracking-[0.35em] text-steel-400"
             >
-              Precision Filling & Packaging Machinery
+              Smart Filling Technologies
             </motion.p>
 
             {/* Headline — word-by-word stagger */}
