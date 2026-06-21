@@ -6,7 +6,7 @@ import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import {
   Shield, Cpu, Clock, Globe, ChevronRight,
-  Beaker, Leaf, Cookie, ArrowRight, Cog, Award, Package, Play, Droplets, Container, CreditCard,
+  Beaker, Leaf, Cookie, ArrowRight, Cog, Award, Package, Play, Droplets, Container, CreditCard, Tag, ArrowDownToLine, Lock
 } from "lucide-react";
 import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/ui/AnimatedSection";
 import { Button } from "@/components/ui/Button";
@@ -22,10 +22,10 @@ const heroWords = ["Precision", "Filling", "&", "Packing", "Machinery"];
 const heroWords2 = ["Engineered", "in", "India"];
 
 const lineSteps = [
-  { t: "Feed", d: "Turn tables & conveyors orient and stage bottles into the line.", num: "01" },
-  { t: "Fill", d: "Servo auger & nozzle heads dose powders and liquids with precision.", num: "02" },
-  { t: "Cap", d: "Rotary cappers seal vials leak-proof and contamination-free.", num: "03" },
-  { t: "Label", d: "Sticker labelling at up to 30 BPM for round bottles.", num: "04" },
+  { t: "Feed", d: "Turn tables & conveyors orient and stage bottles into the line.", num: "01", icon: ArrowDownToLine, color: "text-neon-blue", borderColor: "border-neon-blue", hoverBorder: "hover:border-neon-blue/50" },
+  { t: "Fill", d: "Servo auger & nozzle heads dose powders and liquids with precision.", num: "02", icon: Droplets, color: "text-emerald-400", borderColor: "border-emerald-400", hoverBorder: "hover:border-emerald-400/50" },
+  { t: "Cap", d: "Rotary cappers seal vials leak-proof and contamination-free.", num: "03", icon: Lock, color: "text-neon-violet", borderColor: "border-neon-violet", hoverBorder: "hover:border-neon-violet/50" },
+  { t: "Label", d: "Sticker labelling at up to 30 BPM for round bottles.", num: "04", icon: Tag, color: "text-neon-cyan", borderColor: "border-neon-cyan", hoverBorder: "hover:border-neon-cyan/50" },
 ];
 
 const industryIcons = [
@@ -243,28 +243,61 @@ export default function HomePage() {
       <section className="bg-graphite py-16 md:py-24 relative overflow-hidden">
         <AnimatedGear size={200} direction="clockwise" speed={40} className="absolute -right-16 top-10 text-steel-700/30" />
         <div className="section-container relative z-10">
-          <AnimatedSection className="mb-10 md:mb-14">
+          <AnimatedSection className="mb-14 text-center">
             <p className="mb-4 text-xs uppercase tracking-[0.3em] text-neon-violet">The Line</p>
-            <h2 className="font-heading font-bold text-2xl sm:text-4xl md:text-5xl text-white max-w-2xl">
-              From raw material to a <span className="text-silver">sealed, labelled</span> product.
+            <h2 className="font-heading font-bold text-3xl sm:text-4xl md:text-5xl text-white max-w-2xl mx-auto">
+              The <span className="text-iri">Automated</span> Flow
             </h2>
-            <p className="mt-4 max-w-xl text-steel-400">
-              Every Smart Filling system is built as one continuous, automated flow.
+            <p className="mt-4 max-w-xl text-steel-400 mx-auto">
+              From raw material to a sealed, labelled product. Every Smart Filling system is built as one continuous sequence.
             </p>
           </AnimatedSection>
 
-          <StaggerContainer className="grid gap-px overflow-hidden rounded-2xl border border-steel-700/50 bg-steel-700/30 md:grid-cols-4">
-            {lineSteps.map((s) => (
-              <StaggerItem key={s.t}>
-                <div className="group relative bg-graphite-light p-6 md:p-7 transition-colors hover:bg-steel-800 h-full">
-                  <span className="text-sm font-semibold text-iri">{s.num}</span>
-                  <h3 className="mt-3 text-xl font-heading font-semibold text-white">{s.t}</h3>
-                  <p className="mt-2 text-sm text-steel-400">{s.d}</p>
-                  <div className="absolute bottom-0 left-0 h-0.5 w-0 bg-[image:var(--gradient-iri)] transition-all duration-500 group-hover:w-full" />
-                </div>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
+          {/* Aesthetic Vertical Flow Diagram */}
+          <div className="relative max-w-4xl mx-auto py-4 md:py-10">
+            {/* Center Line (Animated Draw Down) */}
+            <motion.div 
+              initial={{ height: 0 }}
+              whileInView={{ height: "100%" }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 1.5, ease: "easeInOut" }}
+              className="absolute left-[28px] md:left-1/2 top-0 w-1 bg-[image:var(--gradient-iri)] transform md:-translate-x-1/2 rounded-full" 
+            />
+            
+            {/* Faded Background Line (Static Track) */}
+            <div className="absolute left-[28px] md:left-1/2 top-0 bottom-0 w-1 bg-steel-700/30 transform md:-translate-x-1/2 rounded-full" />
+            
+            <StaggerContainer staggerDelay={0.3} className="flex flex-col gap-12 md:gap-0 relative z-10">
+              {lineSteps.map((step, index) => {
+                const isEven = index % 2 === 0;
+                const Icon = step.icon;
+                return (
+                  <StaggerItem key={step.t}>
+                    <div className="relative flex flex-col md:flex-row items-start md:items-center group md:h-48">
+                      
+                      {/* Timeline Node & Icon */}
+                      <div className={`absolute left-[0px] md:left-1/2 top-[0px] md:top-1/2 transform md:-translate-x-1/2 md:-translate-y-1/2 w-[60px] h-[60px] bg-graphite border-[4px] ${step.borderColor} rounded-full flex items-center justify-center z-10 shadow-[0_0_15px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6`}>
+                         <Icon className={`w-6 h-6 ${step.color}`} />
+                      </div>
+                      
+                      {/* Content Box Container */}
+                      <div className={`w-full md:w-1/2 flex pl-20 md:pl-0 pt-2 md:pt-0 ${isEven ? 'md:pr-12 md:justify-end' : 'md:ml-auto md:pl-12 md:justify-start'}`}>
+                        {/* The Box */}
+                        <div className={`relative w-full p-6 md:p-8 rounded-2xl bg-graphite-light border border-steel-700/50 ${step.hoverBorder} transition-colors shadow-xl group-hover:-translate-y-1 duration-300 text-left ${isEven ? 'md:text-right' : ''}`}>
+                          {/* The Bubble Tail (Desktop) */}
+                          <div className={`hidden md:block absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-graphite-light border-steel-700/50 transform rotate-45 ${isEven ? '-right-[11px] border-r border-t' : '-left-[11px] border-l border-b'} transition-colors`} />
+                          
+                          <span className={`text-xs font-bold tracking-[0.2em] uppercase ${step.color}`}>Step {step.num}</span>
+                          <h3 className="text-2xl md:text-3xl font-heading font-bold text-white mt-1 mb-2">{step.t}</h3>
+                          <p className="text-steel-400 text-sm leading-relaxed">{step.d}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </StaggerItem>
+                );
+              })}
+            </StaggerContainer>
+          </div>
         </div>
       </section>
 

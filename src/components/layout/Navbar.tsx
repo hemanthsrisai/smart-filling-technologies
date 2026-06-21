@@ -38,8 +38,8 @@ export function Navbar() {
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
           scrolled
-            ? "bg-purple-950/95 backdrop-blur-md shadow-lg border-b border-purple-800/50"
-            : "bg-purple-950/70 backdrop-blur-sm"
+            ? "bg-graphite/95 backdrop-blur-md shadow-lg border-b border-steel-700/50"
+            : "bg-graphite/70 backdrop-blur-sm"
         )}
       >
         <div className="section-container flex items-center justify-between h-16 md:h-20">
