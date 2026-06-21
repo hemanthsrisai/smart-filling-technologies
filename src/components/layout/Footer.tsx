@@ -32,9 +32,6 @@ export function Footer() {
               Precision filling &amp; packing machinery engineered in India.
               SS304 stainless steel construction with PLC + servo control systems.
             </p>
-            <p className="text-xs text-steel-500 mt-4">
-              Brand: <span className="text-accent font-semibold">Apex</span>
-            </p>
           </div>
 
           {/* Machine Categories */}
