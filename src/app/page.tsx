@@ -259,41 +259,23 @@ export default function HomePage() {
             {/* Faded Background Line (Static Track) */}
             <div className="absolute left-[28px] md:left-1/2 top-0 bottom-0 w-1 bg-steel-700/30 transform md:-translate-x-1/2 rounded-full" />
             
-            {/* Electrifying Flow SVG */}
-            <div className="absolute left-[24px] md:left-1/2 top-0 bottom-0 w-3 transform md:-translate-x-1/2 overflow-hidden pointer-events-none">
-               <svg className="w-full h-full" preserveAspectRatio="none">
-                 <defs>
-                   <linearGradient id="electric-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-                     <stop offset="0%" stopColor="#00f3ff" />
-                     <stop offset="50%" stopColor="#ffffff" />
-                     <stop offset="100%" stopColor="#9d00ff" />
-                   </linearGradient>
-                   <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                     <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                     <feMerge>
-                       <feMergeNode in="coloredBlur"/>
-                       <feMergeNode in="SourceGraphic"/>
-                     </feMerge>
-                   </filter>
-                 </defs>
-                 <motion.line 
-                   x1="50%" y1="0" x2="50%" y2="100%" 
-                   stroke="url(#electric-grad)" 
-                   strokeWidth="2"
-                   strokeDasharray="40 60"
-                   filter="url(#glow)"
-                   animate={{ strokeDashoffset: [200, 0] }}
-                   transition={{ repeat: Infinity, duration: 0.6, ease: "linear" }}
-                 />
-                 <motion.line 
-                   x1="50%" y1="0" x2="50%" y2="100%" 
-                   stroke="#ffffff" 
-                   strokeWidth="1"
-                   strokeDasharray="10 90"
-                   animate={{ strokeDashoffset: [200, 0] }}
-                   transition={{ repeat: Infinity, duration: 0.3, ease: "linear" }}
-                 />
-               </svg>
+            {/* Water Droplets Flow Animation */}
+            <div className="absolute left-[28px] md:left-1/2 top-0 bottom-0 w-8 transform md:-translate-x-1/2 overflow-hidden pointer-events-none z-[5]">
+               {[...Array(6)].map((_, i) => (
+                 <motion.div
+                   key={i}
+                   animate={{ top: ["-10%", "110%"] }}
+                   transition={{ 
+                     duration: 3, 
+                     repeat: Infinity, 
+                     ease: "linear", 
+                     delay: i * 0.5 
+                   }}
+                   className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center text-neon-cyan drop-shadow-[0_0_8px_rgba(0,243,255,0.8)]"
+                 >
+                   <Droplets className="w-4 h-4 opacity-80" />
+                 </motion.div>
+               ))}
             </div>
             
             <StaggerContainer staggerDelay={0.3} className="flex flex-col gap-12 md:gap-0 relative z-10">
@@ -325,6 +307,34 @@ export default function HomePage() {
                   </StaggerItem>
                 );
               })}
+              
+              {/* Final Sealed Packet Animation */}
+              <StaggerItem key="FinalPacket">
+                <div className="relative flex flex-col items-start md:items-center mt-4 md:mt-0 md:h-48">
+                  {/* End of line connector dot */}
+                  <div className="absolute left-[28px] md:left-1/2 top-0 transform md:-translate-x-1/2 w-3 h-3 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399] z-10" />
+                  
+                  <div className="w-full md:w-1/2 flex pl-20 md:pl-0 pt-6 md:pt-10 md:mx-auto md:justify-center">
+                    <motion.div
+                      whileHover={{ scale: 1.05, y: -5 }}
+                      className="relative w-40 h-48 bg-gradient-to-b from-graphite to-graphite-light border-2 border-emerald-400/60 rounded-xl flex flex-col items-center justify-center shadow-[0_0_40px_rgba(52,211,153,0.15)] glow"
+                    >
+                      {/* Top Seal Line */}
+                      <div className="absolute top-3 left-1/2 -translate-x-1/2 w-3/4 h-1.5 bg-emerald-400/80 rounded-full animate-pulse-glow" />
+                      
+                      {/* Packet Graphic */}
+                      <Package className="w-14 h-14 text-emerald-400 mb-4 drop-shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
+                      
+                      <span className="text-xs font-bold tracking-[0.2em] uppercase text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/30">
+                        Sealed
+                      </span>
+                      
+                      {/* Bottom Seal Line */}
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-3/4 h-1.5 bg-emerald-400/80 rounded-full animate-pulse-glow" />
+                    </motion.div>
+                  </div>
+                </div>
+              </StaggerItem>
             </StaggerContainer>
           </div>
         </div>
