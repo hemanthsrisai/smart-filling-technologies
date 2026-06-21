@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -43,6 +43,64 @@ const valueProps = [
   { icon: Cog, title: "Servo Precision", desc: "750W servo drive systems deliver repeatable, high-accuracy fills." },
   { icon: Award, title: "Warranty Included", desc: "All machines ship with manufacturer warranty for peace of mind." },
 ];
+
+const SealedPacketAnimation = () => {
+  const [step, setStep] = useState(0); // 0: Filling, 1: Sealed, 2: Dispatched
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStep((prev) => (prev + 1) % 3);
+    }, 1800); // Change state every 1.8 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  const isFilling = step === 0;
+  const isSealed = step === 1;
+  const isDispatched = step === 2;
+
+  return (
+    <div className="w-full h-full relative flex items-center justify-center overflow-visible">
+      <motion.div
+        animate={{
+          y: isDispatched ? 60 : 0,
+          opacity: isDispatched ? 0 : 1,
+          scale: isDispatched ? 0.9 : 1,
+        }}
+        transition={{ duration: 0.6, ease: "easeInOut" }}
+        className={`relative w-40 h-48 bg-gradient-to-b from-graphite to-graphite-light border-2 rounded-xl flex flex-col items-center justify-center transition-colors duration-500 glow ${
+          isFilling ? "border-neon-cyan/60 shadow-[0_0_30px_rgba(0,243,255,0.15)]" : "border-emerald-400/60 shadow-[0_0_40px_rgba(52,211,153,0.15)]"
+        }`}
+      >
+        {/* Top Seal Line - Animates in during Sealed */}
+        <motion.div 
+          initial={false}
+          animate={{ scaleX: isFilling ? 0 : 1, opacity: isFilling ? 0 : 1 }}
+          transition={{ duration: 0.4 }}
+          className="absolute top-3 left-1/2 -translate-x-1/2 w-3/4 h-1.5 bg-emerald-400/80 rounded-full" 
+        />
+        
+        {/* Packet Graphic */}
+        <Package className={`w-14 h-14 mb-4 transition-colors duration-500 ${
+          isFilling ? "text-neon-cyan drop-shadow-[0_0_10px_rgba(0,243,255,0.8)]" : "text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.8)]"
+        }`} />
+        
+        {/* Status Badge */}
+        <div className={`px-3 py-1 rounded-full border transition-colors duration-500 ${
+          isFilling ? "bg-neon-cyan/10 border-neon-cyan/30 text-neon-cyan" : "bg-emerald-400/10 border-emerald-400/30 text-emerald-400"
+        }`}>
+          <span className="text-xs font-bold tracking-[0.2em] uppercase">
+            {isFilling ? "Filling" : isSealed ? "Sealed" : "Dispatched"}
+          </span>
+        </div>
+        
+        {/* Bottom Seal Line - Always there */}
+        <div className={`absolute bottom-3 left-1/2 -translate-x-1/2 w-3/4 h-1.5 rounded-full transition-colors duration-500 ${
+          isFilling ? "bg-neon-cyan/80" : "bg-emerald-400/80"
+        }`} />
+      </motion.div>
+    </div>
+  );
+};
 
 export default function HomePage() {
   const prefersReduced = useReducedMotion();
@@ -266,10 +324,10 @@ export default function HomePage() {
                    key={i}
                    animate={{ top: ["-10%", "110%"] }}
                    transition={{ 
-                     duration: 3, 
+                     duration: 5, 
                      repeat: Infinity, 
                      ease: "linear", 
-                     delay: i * 0.5 
+                     delay: i * (5/6) 
                    }}
                    className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center text-neon-cyan drop-shadow-[0_0_8px_rgba(0,243,255,0.8)]"
                  >
@@ -314,24 +372,8 @@ export default function HomePage() {
                   {/* End of line connector dot */}
                   <div className="absolute left-[28px] md:left-1/2 top-0 transform md:-translate-x-1/2 w-3 h-3 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399] z-10" />
                   
-                  <div className="w-full md:w-1/2 flex pl-20 md:pl-0 pt-6 md:pt-10 md:mx-auto md:justify-center">
-                    <motion.div
-                      whileHover={{ scale: 1.05, y: -5 }}
-                      className="relative w-40 h-48 bg-gradient-to-b from-graphite to-graphite-light border-2 border-emerald-400/60 rounded-xl flex flex-col items-center justify-center shadow-[0_0_40px_rgba(52,211,153,0.15)] glow"
-                    >
-                      {/* Top Seal Line */}
-                      <div className="absolute top-3 left-1/2 -translate-x-1/2 w-3/4 h-1.5 bg-emerald-400/80 rounded-full animate-pulse-glow" />
-                      
-                      {/* Packet Graphic */}
-                      <Package className="w-14 h-14 text-emerald-400 mb-4 drop-shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
-                      
-                      <span className="text-xs font-bold tracking-[0.2em] uppercase text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/30">
-                        Sealed
-                      </span>
-                      
-                      {/* Bottom Seal Line */}
-                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-3/4 h-1.5 bg-emerald-400/80 rounded-full animate-pulse-glow" />
-                    </motion.div>
+                  <div className="w-full md:w-1/2 flex pl-20 md:pl-0 pt-6 md:pt-10 md:mx-auto md:justify-center overflow-visible h-64">
+                    <SealedPacketAnimation />
                   </div>
                 </div>
               </StaggerItem>
