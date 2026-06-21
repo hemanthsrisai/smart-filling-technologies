@@ -78,7 +78,7 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease }}
-              className="mb-5 text-xs uppercase tracking-[0.35em] text-steel-400"
+              className="mb-5 text-sm md:text-base font-bold uppercase tracking-[0.35em] text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-violet"
             >
               Smart Filling Technologies
             </motion.p>
@@ -261,8 +261,15 @@ export default function HomePage() {
               whileInView={{ height: "100%" }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 1.5, ease: "easeInOut" }}
-              className="absolute left-[28px] md:left-1/2 top-0 w-1 bg-[image:var(--gradient-iri)] transform md:-translate-x-1/2 rounded-full" 
-            />
+              className="absolute left-[28px] md:left-1/2 top-0 w-1 bg-gradient-to-b from-neon-cyan to-neon-violet transform md:-translate-x-1/2 rounded-full overflow-hidden"
+            >
+               {/* Moving Laser Pulse Animation inside the drawn line */}
+               <motion.div 
+                 animate={{ top: ["-20%", "120%"] }}
+                 transition={{ duration: 2.5, ease: "linear", repeat: Infinity }}
+                 className="absolute left-0 right-0 h-40 bg-white opacity-80 blur-[2px]" 
+               />
+            </motion.div>
             
             {/* Faded Background Line (Static Track) */}
             <div className="absolute left-[28px] md:left-1/2 top-0 bottom-0 w-1 bg-steel-700/30 transform md:-translate-x-1/2 rounded-full" />
