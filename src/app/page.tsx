@@ -6,7 +6,7 @@ import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import {
   Shield, Cpu, Clock, Globe, ChevronRight,
-  Beaker, Leaf, Cookie, ArrowRight, Cog, Award, Package, Play,
+  Beaker, Leaf, Cookie, ArrowRight, Cog, Award, Package, Play, Droplets, Container, CreditCard,
 } from "lucide-react";
 import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/ui/AnimatedSection";
 import { Button } from "@/components/ui/Button";
@@ -32,6 +32,9 @@ const industryIcons = [
   { icon: Beaker, title: "Pharmaceutical", desc: "Powder filling, vial sealing, and contamination-free packaging for pharma production lines." },
   { icon: Leaf, title: "Pesticides & Agrochemical", desc: "SS304-grade filling systems built to handle agrochemical powders with chemical resistance." },
   { icon: Cookie, title: "Food Powder Packing", desc: "Auger-based filling for flour, spices, coffee, turmeric, and other food powders." },
+  { icon: Droplets, title: "Water Packing", desc: "High-speed bottle rinsing, filling, and capping for mineral water and beverages." },
+  { icon: Container, title: "Oil Packing", desc: "Viscous liquid filling machines engineered specifically for edible and industrial oils." },
+  { icon: CreditCard, title: "Snap Card Packing", desc: "Specialized blister and snap card packaging automation for consumer goods." },
 ];
 
 const valueProps = [
@@ -194,7 +197,7 @@ export default function HomePage() {
         </div>
         <div className="relative flex overflow-x-hidden w-full group">
           {/* We duplicate the products array a few times to ensure the marquee fills wide screens smoothly */}
-          <div className="animate-marquee gap-6 px-3 items-center">
+          <div className="animate-marquee-reverse gap-6 px-3 items-center">
             {[...products, ...products, ...products, ...products].map((product, i) => (
               <Link 
                 key={`${product.slug}-${i}`} 
@@ -378,19 +381,19 @@ export default function HomePage() {
             </h2>
           </AnimatedSection>
 
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
-            {industryIcons.map(({ icon: Icon, title, desc }) => (
-              <StaggerItem key={title}>
-                <div className="holo-bg rounded-2xl border border-steel-700/50 bg-graphite-light p-6 text-center md:text-left">
-                  <div className="w-12 h-12 rounded-xl bg-neon-blue/10 flex items-center justify-center mx-auto md:mx-0 mb-4">
+          <div className="relative flex overflow-x-hidden w-full group py-4">
+            <div className="animate-marquee-reverse gap-5 px-2.5 items-stretch">
+              {[...industryIcons, ...industryIcons, ...industryIcons].map(({ icon: Icon, title, desc }, idx) => (
+                <div key={`${title}-${idx}`} className="w-[280px] md:w-[320px] shrink-0 holo-bg rounded-2xl border border-steel-700/50 bg-graphite-light p-6 text-center md:text-left flex flex-col h-full hover:border-neon-blue/50 transition-colors glow">
+                  <div className="w-12 h-12 rounded-xl bg-neon-blue/10 flex items-center justify-center mx-auto md:mx-0 mb-4 shrink-0">
                     <Icon className="w-6 h-6 text-neon-blue" />
                   </div>
-                  <h3 className="font-heading font-bold text-white mb-2">{title}</h3>
-                  <p className="text-steel-400 text-sm leading-relaxed">{desc}</p>
+                  <h3 className="font-heading font-bold text-white mb-2 shrink-0">{title}</h3>
+                  <p className="text-steel-400 text-sm leading-relaxed flex-grow">{desc}</p>
                 </div>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
+              ))}
+            </div>
+          </div>
 
           <AnimatedSection className="text-center mt-8">
             <Button href="/industries" variant="ghost" className="text-steel-300 hover:text-white">
