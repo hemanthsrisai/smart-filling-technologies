@@ -1,33 +1,29 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { Play, X } from "lucide-react";
-import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/ui/AnimatedSection";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight, Play, X } from "lucide-react";
+import { AnimatedSection } from "@/components/ui/AnimatedSection";
 
 /* ─── Gallery Data ─── */
-interface GalleryItem {
+export interface GalleryItem {
   type: "image" | "video";
   src: string;
-  thumb?: string;
   title: string;
-  span?: string; // tailwind col/row span class
 }
 
-const galleryItems: GalleryItem[] = [
-  // Images
-  { type: "image", src: "/gallery/gallery-image-1.jpg", title: "Multi-Head Pouch Packing Machine", span: "md:col-span-2 md:row-span-2" },
-  { type: "image", src: "/gallery/gallery-image-2.jpg", title: "Single-Head Packing Unit" },
-  { type: "image", src: "/gallery/gallery-image-3.jpg", title: "Production Floor – Machines Ready for Dispatch" },
-  { type: "image", src: "/gallery/gallery-image-4.jpg", title: "Liquid Filling System" },
-  // Videos
+export const galleryItems: GalleryItem[] = [
+  { type: "image", src: "/gallery/gallery-image-1.jpg", title: "Multi-Head Pouch Packing Machine" },
   { type: "video", src: "/gallery/gallery-video-1.mp4", title: "Pouch Filling Line in Action" },
-  { type: "video", src: "/gallery/gallery-video-2.mp4", title: "High-Speed Packaging Demo", span: "md:col-span-2" },
+  { type: "image", src: "/gallery/gallery-image-2.jpg", title: "Single-Head Packing Unit" },
+  { type: "video", src: "/gallery/gallery-video-2.mp4", title: "High-Speed Packaging Demo" },
+  { type: "image", src: "/gallery/gallery-image-3.jpg", title: "Production Floor – Ready for Dispatch" },
   { type: "video", src: "/gallery/gallery-video-3.mp4", title: "Auger Filling Operation" },
+  { type: "image", src: "/gallery/gallery-image-4.jpg", title: "Liquid Filling System" },
   { type: "video", src: "/gallery/gallery-video-4.mp4", title: "Liquid Filling Process" },
   { type: "video", src: "/gallery/gallery-video-5.mp4", title: "Sealing Machine Demo" },
-  { type: "video", src: "/gallery/gallery-video-6.mp4", title: "Complete Production Run", span: "md:col-span-2" },
+  { type: "video", src: "/gallery/gallery-video-6.mp4", title: "Complete Production Run" },
   { type: "video", src: "/gallery/gallery-video-7.mp4", title: "Pouch Forming Unit" },
   { type: "video", src: "/gallery/gallery-video-8.mp4", title: "Batch Coding System" },
   { type: "video", src: "/gallery/gallery-video-9.mp4", title: "Conveyor Integration" },
@@ -40,22 +36,16 @@ const galleryItems: GalleryItem[] = [
   { type: "video", src: "/gallery/gallery-video-16.mp4", title: "Full Assembly Line" },
 ];
 
-/* ─── Video Card ─── */
+/* ─── Inline Video Card (hover to preview) ─── */
 function VideoCard({ item, onClick }: { item: GalleryItem; onClick: () => void }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
+  const [hovering, setHovering] = useState(false);
 
   return (
-    <motion.div
-      className={`group relative rounded-2xl overflow-hidden cursor-pointer bg-graphite-light border border-steel-700/30 hover:border-neon-cyan/40 transition-colors duration-300 ${item.span || ""}`}
-      onMouseEnter={() => {
-        setIsHovered(true);
-        videoRef.current?.play();
-      }}
-      onMouseLeave={() => {
-        setIsHovered(false);
-        videoRef.current?.pause();
-      }}
+    <div
+      className="group relative rounded-2xl overflow-hidden cursor-pointer bg-graphite-light border border-steel-700/30 hover:border-neon-cyan/40 transition-colors duration-300 flex-shrink-0 w-[280px] sm:w-[340px] md:w-[400px] snap-center"
+      onMouseEnter={() => { setHovering(true); videoRef.current?.play(); }}
+      onMouseLeave={() => { setHovering(false); videoRef.current?.pause(); }}
       onClick={onClick}
     >
       <div className="relative aspect-video w-full overflow-hidden">
@@ -68,47 +58,44 @@ function VideoCard({ item, onClick }: { item: GalleryItem; onClick: () => void }
           preload="metadata"
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
-        {/* Play overlay */}
         <motion.div
           initial={false}
-          animate={{ opacity: isHovered ? 0 : 1 }}
+          animate={{ opacity: hovering ? 0 : 1 }}
           className="absolute inset-0 bg-graphite/60 flex items-center justify-center"
         >
-          <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
-            <Play className="w-7 h-7 text-white fill-white ml-1" />
+          <div className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
+            <Play className="w-6 h-6 text-white fill-white ml-0.5" />
           </div>
         </motion.div>
       </div>
-      {/* Title bar */}
       <div className="p-3 md:p-4">
         <p className="text-sm font-medium text-steel-300 group-hover:text-white transition-colors truncate">{item.title}</p>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
-/* ─── Image Card ─── */
+/* ─── Inline Image Card ─── */
 function ImageCard({ item, onClick }: { item: GalleryItem; onClick: () => void }) {
   return (
-    <motion.div
-      className={`group relative rounded-2xl overflow-hidden cursor-pointer bg-graphite-light border border-steel-700/30 hover:border-neon-violet/40 transition-colors duration-300 ${item.span || ""}`}
+    <div
+      className="group relative rounded-2xl overflow-hidden cursor-pointer bg-graphite-light border border-steel-700/30 hover:border-neon-violet/40 transition-colors duration-300 flex-shrink-0 w-[280px] sm:w-[340px] md:w-[400px] snap-center"
       onClick={onClick}
     >
-      <div className={`relative w-full overflow-hidden ${item.span?.includes("row-span-2") ? "aspect-square" : "aspect-video"}`}>
+      <div className="relative aspect-video w-full overflow-hidden">
         <Image
           src={item.src}
           alt={item.title}
           fill
           className="object-cover transition-transform duration-700 group-hover:scale-105"
-          sizes="(max-width: 768px) 100vw, 33vw"
+          sizes="400px"
         />
-        {/* Hover gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-graphite/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="absolute inset-0 bg-gradient-to-t from-graphite/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </div>
       <div className="p-3 md:p-4">
         <p className="text-sm font-medium text-steel-300 group-hover:text-white transition-colors truncate">{item.title}</p>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -139,12 +126,7 @@ function Lightbox({ item, onClose }: { item: GalleryItem; onClose: () => void })
         onClick={(e) => e.stopPropagation()}
       >
         {item.type === "video" ? (
-          <video
-            src={item.src}
-            controls
-            autoPlay
-            className="w-full h-full max-h-[85vh] object-contain bg-black rounded-2xl"
-          />
+          <video src={item.src} controls autoPlay className="w-full h-full max-h-[85vh] object-contain bg-black rounded-2xl" />
         ) : (
           <div className="relative w-full aspect-[4/3]">
             <Image src={item.src} alt={item.title} fill className="object-contain bg-black rounded-2xl" sizes="90vw" />
@@ -158,18 +140,33 @@ function Lightbox({ item, onClose }: { item: GalleryItem; onClose: () => void })
   );
 }
 
-/* ─── Main Gallery Section ─── */
-export function GallerySection() {
+/* ═══════════════════════════════════════════════════
+   HOMEPAGE CAROUSEL — horizontal slider with arrows
+   ═══════════════════════════════════════════════════ */
+export function GalleryCarousel() {
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
-  const [filter, setFilter] = useState<"all" | "image" | "video">("all");
 
-  const filtered = filter === "all" ? galleryItems : galleryItems.filter((i) => i.type === filter);
-
-  const filters = [
-    { key: "all" as const, label: "All" },
-    { key: "image" as const, label: "Photos" },
-    { key: "video" as const, label: "Videos" },
-  ];
+  const scroll = useCallback((direction: "left" | "right") => {
+    const container = scrollRef.current;
+    if (!container) return;
+    const cardWidth = 420; // approx card + gap
+    if (direction === "right") {
+      // If near end, loop back
+      if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
+        container.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        container.scrollBy({ left: cardWidth, behavior: "smooth" });
+      }
+    } else {
+      // If at start, loop to end
+      if (container.scrollLeft <= 10) {
+        container.scrollTo({ left: container.scrollWidth, behavior: "smooth" });
+      } else {
+        container.scrollBy({ left: -cardWidth, behavior: "smooth" });
+      }
+    }
+  }, []);
 
   return (
     <section className="relative px-4 py-20 md:py-32 bg-graphite overflow-hidden">
@@ -185,45 +182,63 @@ export function GallerySection() {
             Machine <span className="text-iri">Gallery</span>
           </h2>
           <p className="text-steel-400 max-w-2xl mx-auto">
-            Real machines, real production lines. Browse our latest builds and watch them in action
-            on the factory floor.
+            Real machines, real production lines. Browse our latest builds and watch them in action.
           </p>
         </AnimatedSection>
 
-        {/* Filter tabs */}
-        <AnimatedSection delay={0.2} className="flex justify-center gap-2 mb-10">
-          {filters.map((f) => (
-            <motion.button
-              key={f.key}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setFilter(f.key)}
-              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 border min-h-[44px] ${
-                filter === f.key
-                  ? "bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border-neon-cyan/40 text-white shadow-[0_0_20px_rgba(0,243,255,0.1)]"
-                  : "bg-graphite-light border-steel-700/50 text-steel-400 hover:text-white hover:border-steel-500"
-              }`}
-            >
-              {f.label}
-            </motion.button>
-          ))}
-        </AnimatedSection>
+        {/* Carousel Container */}
+        <div className="relative group">
+          {/* Left Arrow */}
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => scroll("left")}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 md:w-14 md:h-14 rounded-full bg-graphite/80 backdrop-blur-md border border-steel-700/50 flex items-center justify-center text-white hover:border-neon-cyan/50 hover:shadow-[0_0_20px_rgba(0,243,255,0.15)] transition-all -translate-x-1/2 md:-translate-x-1/3"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </motion.button>
 
-        {/* Masonry Grid */}
-        <StaggerContainer staggerDelay={0.08} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-          {filtered.map((item) => (
-            <StaggerItem key={item.src}>
-              {item.type === "video" ? (
-                <VideoCard item={item} onClick={() => setSelectedItem(item)} />
+          {/* Right Arrow */}
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => scroll("right")}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 md:w-14 md:h-14 rounded-full bg-graphite/80 backdrop-blur-md border border-steel-700/50 flex items-center justify-center text-white hover:border-neon-cyan/50 hover:shadow-[0_0_20px_rgba(0,243,255,0.15)] transition-all translate-x-1/2 md:translate-x-1/3"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </motion.button>
+
+          {/* Scrollable Row */}
+          <div
+            ref={scrollRef}
+            className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide py-4 px-2 snap-x snap-mandatory scroll-smooth"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {galleryItems.map((item) =>
+              item.type === "video" ? (
+                <VideoCard key={item.src} item={item} onClick={() => setSelectedItem(item)} />
               ) : (
-                <ImageCard item={item} onClick={() => setSelectedItem(item)} />
-              )}
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
+                <ImageCard key={item.src} item={item} onClick={() => setSelectedItem(item)} />
+              )
+            )}
+          </div>
+        </div>
+
+        {/* View Full Gallery Link */}
+        <AnimatedSection delay={0.3} className="text-center mt-8">
+          <a
+            href="/gallery"
+            className="inline-flex items-center gap-2 text-sm font-medium text-steel-400 hover:text-white transition-colors border border-steel-700/50 hover:border-neon-cyan/40 px-6 py-3 rounded-full"
+          >
+            View Full Gallery <ChevronRight className="w-4 h-4" />
+          </a>
+        </AnimatedSection>
       </div>
 
       {/* Lightbox */}
-      {selectedItem && <Lightbox item={selectedItem} onClose={() => setSelectedItem(null)} />}
+      <AnimatePresence>
+        {selectedItem && <Lightbox item={selectedItem} onClose={() => setSelectedItem(null)} />}
+      </AnimatePresence>
     </section>
   );
 }

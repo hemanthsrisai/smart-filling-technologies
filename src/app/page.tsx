@@ -12,7 +12,7 @@ import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/ui/
 import { Button } from "@/components/ui/Button";
 import { CountUp } from "@/components/ui/CountUp";
 import { ProductCard } from "@/components/product/ProductCard";
-import { GallerySection } from "@/components/ui/GallerySection";
+import { GalleryCarousel } from "@/components/ui/GallerySection";
 import { AnimatedGear, AnimatedScrew, FloatingParticles } from "@/components/ui/AnimatedMachinery";
 import { products, CATEGORIES } from "@/lib/data/products";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -587,7 +587,7 @@ export default function HomePage() {
       {/* ════════════════════════════════════════════
           GALLERY — Machine Photos & Videos
           ════════════════════════════════════════════ */}
-      <GallerySection />
+      <GalleryCarousel />
 
       {/* ════════════════════════════════════════════
           CTA BAND — Holographic
