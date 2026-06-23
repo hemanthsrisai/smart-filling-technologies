@@ -20,9 +20,9 @@ export function CustomVideoPlayer({ src }: { src: string }) {
     setShowControls(true);
     if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
     controlsTimeoutRef.current = setTimeout(() => {
-      if (isPlaying) setShowControls(false);
+      if (isPlaying && !isScrubbing) setShowControls(false);
     }, 3000);
-  }, [isPlaying]);
+  }, [isPlaying, isScrubbing]);
 
   useEffect(() => {
     resetControlsTimeout();
@@ -31,34 +31,75 @@ export function CustomVideoPlayer({ src }: { src: string }) {
     };
   }, [isPlaying, resetControlsTimeout]);
 
+  // Handle video element duration fallback (e.g. if loaded metadata fired before mount)
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      const handleMetadata = () => {
+        setDuration(video.duration);
+      };
+      
+      if (video.duration && !isNaN(video.duration)) {
+        setDuration(video.duration);
+      }
+      
+      video.addEventListener("loadedmetadata", handleMetadata);
+      return () => {
+        video.removeEventListener("loadedmetadata", handleMetadata);
+      };
+    }
+  }, []);
+
   const togglePlay = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
+    if (!videoRef.current) return;
+    if (isPlaying) {
+      videoRef.current.pause();
+    } else {
+      videoRef.current.play();
     }
+    setIsPlaying(!isPlaying);
   };
 
   const handleTimeUpdate = () => {
     if (videoRef.current && !isScrubbing) {
-      const current = videoRef.current.currentTime;
-      const total = videoRef.current.duration || 1;
-      setCurrentTime(current);
-      setProgress((current / total) * 100);
+      const cur = videoRef.current.currentTime;
+      const dur = videoRef.current.duration || 1;
+      setCurrentTime(cur);
+      setProgress((cur / dur) * 100);
     }
   };
 
   const handleLoadedMetadata = () => {
-    if (videoRef.current) {
-      setDuration(videoRef.current.duration);
+    if (videoRef.current) setDuration(videoRef.current.duration);
+  };
+
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    videoRef.current.muted = !isMuted;
+    setIsMuted(!isMuted);
+  };
+
+  const toggleFullscreen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const container = videoRef.current?.parentElement;
+    if (!container) return;
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      container.requestFullscreen();
     }
   };
 
-  /* ── Touch/pointer-friendly scrubbing ── */
+  const formatTime = (t: number) => {
+    if (isNaN(t)) return "0:00";
+    const m = Math.floor(t / 60);
+    const s = Math.floor(t % 60);
+    return `${m}:${s < 10 ? "0" : ""}${s}`;
+  };
+
+  // Convert coordinate position to seek position
   const seekToPosition = useCallback(
     (clientX: number) => {
       const bar = progressBarRef.current;
@@ -67,81 +108,52 @@ export function CustomVideoPlayer({ src }: { src: string }) {
       const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
       const pct = (x / rect.width) * 100;
       const time = (pct / 100) * duration;
-      videoRef.current.currentTime = time;
+      
       setProgress(pct);
       setCurrentTime(time);
+      videoRef.current.currentTime = time;
     },
     [duration]
   );
 
-  const handleScrubStart = useCallback(
-    (e: React.PointerEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsScrubbing(true);
-      (e.target as HTMLElement).setPointerCapture(e.pointerId);
-      seekToPosition(e.clientX);
-    },
-    [seekToPosition]
-  );
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return; // Only handle primary/left click
+    e.stopPropagation();
+    setIsScrubbing(true);
+    resetControlsTimeout();
+    seekToPosition(e.clientX);
+  };
 
-  const handleScrubMove = useCallback(
-    (e: React.PointerEvent) => {
-      if (!isScrubbing) return;
-      e.preventDefault();
-      e.stopPropagation();
-      seekToPosition(e.clientX);
-    },
-    [isScrubbing, seekToPosition]
-  );
+  // Listen for global movements during scrubbing
+  useEffect(() => {
+    if (!isScrubbing) return;
 
-  const handleScrubEnd = useCallback(
-    (e: React.PointerEvent) => {
-      if (!isScrubbing) return;
+    const handlePointerMove = (e: PointerEvent) => {
+      // Prevents page scroll gestures on touch screens
       e.preventDefault();
-      e.stopPropagation();
+      seekToPosition(e.clientX);
+    };
+
+    const handlePointerUp = () => {
       setIsScrubbing(false);
-      try {
-        (e.target as HTMLElement).releasePointerCapture(e.pointerId);
-      } catch {}
-    },
-    [isScrubbing]
-  );
+    };
 
-  const toggleMute = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
-    }
-  };
+    window.addEventListener("pointermove", handlePointerMove, { passive: false });
+    window.addEventListener("pointerup", handlePointerUp);
 
-  const toggleFullscreen = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const container = videoRef.current?.parentElement;
-    if (container) {
-      if (document.fullscreenElement) {
-        document.exitFullscreen();
-      } else {
-        container.requestFullscreen();
-      }
-    }
-  };
-
-  const formatTime = (time: number) => {
-    if (isNaN(time)) return "0:00";
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-  };
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+    };
+  }, [isScrubbing, seekToPosition]);
 
   return (
     <div
-      className="relative w-full h-full max-h-[85vh] bg-black rounded-2xl overflow-hidden group"
+      className="custom-video-player relative w-full h-full max-h-[85vh] bg-black rounded-2xl overflow-hidden select-none"
       onMouseMove={resetControlsTimeout}
       onTouchStart={resetControlsTimeout}
-      onMouseLeave={() => isPlaying && setShowControls(false)}
-      onClick={togglePlay}
+      onMouseLeave={() => isPlaying && !isScrubbing && setShowControls(false)}
+      onClick={() => togglePlay()}
     >
       <video
         ref={videoRef}
@@ -151,10 +163,10 @@ export function CustomVideoPlayer({ src }: { src: string }) {
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={() => setIsPlaying(false)}
-        className="w-full h-full object-contain cursor-pointer"
+        className="w-full h-full object-contain"
       />
 
-      {/* Center Play/Pause Overlay */}
+      {/* Big center play icon when paused */}
       <div
         className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 ${
           !isPlaying ? "opacity-100" : "opacity-0"
@@ -165,58 +177,54 @@ export function CustomVideoPlayer({ src }: { src: string }) {
         </div>
       </div>
 
-      {/* Controls Bar */}
+      {/* ── Controls overlay ── */}
       <div
-        className={`absolute bottom-0 left-0 right-0 px-4 pb-4 pt-14 bg-gradient-to-t from-black/90 via-black/50 to-transparent transition-opacity duration-300 ${
+        className={`absolute bottom-0 left-0 right-0 px-3 sm:px-4 pb-3 sm:pb-4 pt-16 bg-gradient-to-t from-black/90 via-black/50 to-transparent transition-opacity duration-300 ${
           showControls || isScrubbing ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
       >
-        {/* Progress Bar — fully touch-draggable */}
+        {/* Seekbar container */}
         <div
           ref={progressBarRef}
-          className="relative w-full h-6 flex items-center cursor-pointer mb-2 touch-none"
-          onPointerDown={handleScrubStart}
-          onPointerMove={handleScrubMove}
-          onPointerUp={handleScrubEnd}
-          onPointerCancel={handleScrubEnd}
+          onPointerDown={handlePointerDown}
+          className="relative w-full h-8 flex items-center mb-1 group/seek cursor-pointer touch-none select-none"
         >
-          {/* Track background */}
-          <div className="absolute left-0 right-0 h-[5px] bg-white/20 rounded-full top-1/2 -translate-y-1/2 overflow-hidden">
-            {/* Filled track */}
-            <div
-              className="h-full bg-neon-cyan rounded-full transition-[width] duration-75 ease-linear"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          {/* Thumb / scrubber dot */}
+          {/* Visual track background */}
+          <div className="absolute left-0 right-0 h-[4px] rounded-full bg-white/20 pointer-events-none group-hover/seek:h-[6px] transition-all duration-150" />
+          
+          {/* Visual filled track */}
           <div
-            className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-neon-cyan shadow-[0_0_12px_#67e8f9] transition-transform duration-100 ${
-              isScrubbing ? "scale-125" : "scale-100"
+            className="absolute left-0 h-[4px] rounded-full bg-[#67e8f9] pointer-events-none group-hover/seek:h-[6px] transition-all duration-150"
+            style={{ width: `${progress}%` }}
+          />
+
+          {/* Visual thumb dot (always visible on mobile, visible on hover on desktop) */}
+          <div
+            className={`absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-[#67e8f9] shadow-[0_0_8px_#67e8f9] pointer-events-none transition-all duration-150 ${
+              isScrubbing ? "scale-125 opacity-100" : "scale-100 opacity-100 sm:opacity-0 sm:group-hover/seek:opacity-100"
             }`}
-            style={{ left: `calc(${progress}% - 8px)` }}
+            style={{ left: `${progress}%`, transform: `translate(-50%, -50%)` }}
           />
         </div>
 
-        {/* Buttons */}
+        {/* Buttons row */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button onClick={togglePlay} className="text-white hover:text-neon-cyan transition-colors">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <button onClick={() => togglePlay()} className="text-white hover:text-[#67e8f9] transition-colors">
               {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current" />}
             </button>
-            <button onClick={toggleMute} className="text-white hover:text-neon-cyan transition-colors">
+            <button onClick={toggleMute} className="text-white hover:text-[#67e8f9] transition-colors">
               {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
             </button>
-            <div className="text-white/80 text-xs sm:text-sm font-mono tracking-tighter">
+            <div className="text-white/80 text-xs sm:text-sm font-mono tracking-tighter select-none">
               {formatTime(currentTime)} <span className="opacity-50">/</span> {formatTime(duration)}
             </div>
           </div>
-
-          <div className="flex items-center gap-4">
-            <button onClick={toggleFullscreen} className="text-white hover:text-neon-cyan transition-colors">
-              <Maximize className="w-5 h-5" />
-            </button>
-          </div>
+          <button onClick={toggleFullscreen} className="text-white hover:text-[#67e8f9] transition-colors">
+            <Maximize className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </div>
