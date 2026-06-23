@@ -200,6 +200,23 @@ export function GalleryCarousel() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
 
+  // Handle browser back button to close lightbox
+  useEffect(() => {
+    if (selectedItem) {
+      window.history.pushState({ lightbox: true }, "");
+      const handlePopState = () => setSelectedItem(null);
+      window.addEventListener("popstate", handlePopState);
+      return () => window.removeEventListener("popstate", handlePopState);
+    }
+  }, [selectedItem]);
+
+  const closeLightbox = () => {
+    setSelectedItem(null);
+    if (window.history.state?.lightbox) {
+      window.history.back();
+    }
+  };
+
   const scroll = useCallback((direction: "left" | "right") => {
     const container = scrollRef.current;
     if (!container) return;
@@ -293,7 +310,7 @@ export function GalleryCarousel() {
         {selectedItem && (
           <Lightbox 
             item={selectedItem} 
-            onClose={() => setSelectedItem(null)} 
+            onClose={closeLightbox} 
             onNext={() => {
               const idx = galleryItems.indexOf(selectedItem);
               setSelectedItem(galleryItems[(idx + 1) % galleryItems.length]);

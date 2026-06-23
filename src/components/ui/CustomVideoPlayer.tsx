@@ -11,6 +11,7 @@ export function CustomVideoPlayer({ src }: { src: string }) {
   const [duration, setDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [showControls, setShowControls] = useState(true);
+  const [isScrubbing, setIsScrubbing] = useState(false);
   const controlsTimeoutRef = useRef<NodeJS.Timeout>(null);
 
   // Auto-hide controls after 2.5 seconds of inactivity
@@ -42,7 +43,7 @@ export function CustomVideoPlayer({ src }: { src: string }) {
   };
 
   const handleTimeUpdate = () => {
-    if (videoRef.current) {
+    if (videoRef.current && !isScrubbing) {
       const current = videoRef.current.currentTime;
       const total = videoRef.current.duration || 1;
       setCurrentTime(current);
@@ -58,10 +59,10 @@ export function CustomVideoPlayer({ src }: { src: string }) {
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const seekTo = Number(e.target.value);
+    setProgress(seekTo);
     if (videoRef.current && duration) {
       const time = (seekTo / 100) * duration;
       videoRef.current.currentTime = time;
-      setProgress(seekTo);
       setCurrentTime(time);
     }
   };
@@ -137,6 +138,9 @@ export function CustomVideoPlayer({ src }: { src: string }) {
             step="0.1"
             value={progress}
             onChange={handleSeek}
+            onPointerDown={() => setIsScrubbing(true)}
+            onPointerUp={() => setIsScrubbing(false)}
+            onPointerCancel={() => setIsScrubbing(false)}
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           />
           {/* Scrubber thumb that appears on hover */}

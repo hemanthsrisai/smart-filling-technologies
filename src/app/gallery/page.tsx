@@ -172,6 +172,23 @@ export default function GalleryPage() {
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
   const [filter, setFilter] = useState<"all" | "image" | "video">("all");
 
+  // Handle browser back button to close lightbox
+  useEffect(() => {
+    if (selectedItem) {
+      window.history.pushState({ lightbox: true }, "");
+      const handlePopState = () => setSelectedItem(null);
+      window.addEventListener("popstate", handlePopState);
+      return () => window.removeEventListener("popstate", handlePopState);
+    }
+  }, [selectedItem]);
+
+  const closeLightbox = () => {
+    setSelectedItem(null);
+    if (window.history.state?.lightbox) {
+      window.history.back();
+    }
+  };
+
   const filtered = filter === "all" ? galleryItems : galleryItems.filter((i) => i.type === filter);
 
   const filters = [
@@ -238,7 +255,7 @@ export default function GalleryPage() {
         {selectedItem && (
           <Lightbox 
             item={selectedItem} 
-            onClose={() => setSelectedItem(null)} 
+            onClose={closeLightbox} 
             onNext={() => {
               const idx = galleryItems.indexOf(selectedItem);
               setSelectedItem(galleryItems[(idx + 1) % galleryItems.length]);

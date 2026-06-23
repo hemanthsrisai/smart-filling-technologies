@@ -325,9 +325,6 @@ body {
   will-change: transform;
   transform: translateZ(0);
 }
-.animate-marquee:hover {
-  animation-play-state: paused;
-}
 
 .animate-marquee-reverse {
   animation: marquee-reverse 40s linear infinite;
@@ -336,8 +333,12 @@ body {
   will-change: transform;
   transform: translateZ(0);
 }
-.animate-marquee-reverse:hover {
-  animation-play-state: paused;
+
+@media (hover: hover) {
+  .animate-marquee:hover,
+  .animate-marquee-reverse:hover {
+    animation-play-state: paused;
+  }
 }
 
 /* ─────────────────────────────────────────────────
