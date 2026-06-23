@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Play, X, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatedSection, StaggerContainer, StaggerItem } from "@/components/ui/AnimatedSection";
 import { galleryItems, GalleryItem } from "@/components/ui/GallerySection";
+import { CustomVideoPlayer } from "@/components/ui/CustomVideoPlayer";
 
 /* ─── Video Card ─── */
 function VideoCard({ item, onClick }: { item: GalleryItem; onClick: () => void }) {
@@ -146,11 +147,11 @@ function Lightbox({
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         transition={{ type: "spring", damping: 25 }}
-        className="relative max-w-5xl max-h-[85vh] w-full rounded-2xl overflow-hidden shadow-2xl"
+        className="relative max-w-5xl w-full rounded-2xl overflow-hidden shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {item.type === "video" ? (
-          <video key={item.src} src={item.src} controls autoPlay className="w-full h-full max-h-[85vh] object-contain bg-black rounded-2xl" />
+          <CustomVideoPlayer key={item.src} src={item.src} />
         ) : (
           <div className="relative w-full aspect-[4/3] md:aspect-[16/9] lg:aspect-[21/9] max-h-[85vh]">
             <Image key={item.src} src={item.src} alt={item.title} fill className="object-contain bg-black rounded-2xl" sizes="90vw" />
