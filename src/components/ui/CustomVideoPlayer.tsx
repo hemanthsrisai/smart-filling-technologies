@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { Play, Pause, Volume2, VolumeX, Maximize } from "lucide-react";
 
 export function CustomVideoPlayer({ src }: { src: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const progressBarRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -14,21 +15,21 @@ export function CustomVideoPlayer({ src }: { src: string }) {
   const [isScrubbing, setIsScrubbing] = useState(false);
   const controlsTimeoutRef = useRef<NodeJS.Timeout>(null);
 
-  // Auto-hide controls after 2.5 seconds of inactivity
-  const resetControlsTimeout = () => {
+  // Auto-hide controls after 3s of inactivity
+  const resetControlsTimeout = useCallback(() => {
     setShowControls(true);
     if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
     controlsTimeoutRef.current = setTimeout(() => {
       if (isPlaying) setShowControls(false);
-    }, 2500);
-  };
+    }, 3000);
+  }, [isPlaying]);
 
   useEffect(() => {
     resetControlsTimeout();
     return () => {
       if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
     };
-  }, [isPlaying]);
+  }, [isPlaying, resetControlsTimeout]);
 
   const togglePlay = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -57,15 +58,55 @@ export function CustomVideoPlayer({ src }: { src: string }) {
     }
   };
 
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const seekTo = Number(e.target.value);
-    setProgress(seekTo);
-    if (videoRef.current && duration) {
-      const time = (seekTo / 100) * duration;
+  /* ── Touch/pointer-friendly scrubbing ── */
+  const seekToPosition = useCallback(
+    (clientX: number) => {
+      const bar = progressBarRef.current;
+      if (!bar || !videoRef.current || !duration) return;
+      const rect = bar.getBoundingClientRect();
+      const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+      const pct = (x / rect.width) * 100;
+      const time = (pct / 100) * duration;
       videoRef.current.currentTime = time;
+      setProgress(pct);
       setCurrentTime(time);
-    }
-  };
+    },
+    [duration]
+  );
+
+  const handleScrubStart = useCallback(
+    (e: React.PointerEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsScrubbing(true);
+      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+      seekToPosition(e.clientX);
+    },
+    [seekToPosition]
+  );
+
+  const handleScrubMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (!isScrubbing) return;
+      e.preventDefault();
+      e.stopPropagation();
+      seekToPosition(e.clientX);
+    },
+    [isScrubbing, seekToPosition]
+  );
+
+  const handleScrubEnd = useCallback(
+    (e: React.PointerEvent) => {
+      if (!isScrubbing) return;
+      e.preventDefault();
+      e.stopPropagation();
+      setIsScrubbing(false);
+      try {
+        (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+      } catch {}
+    },
+    [isScrubbing]
+  );
 
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -77,11 +118,12 @@ export function CustomVideoPlayer({ src }: { src: string }) {
 
   const toggleFullscreen = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (videoRef.current) {
+    const container = videoRef.current?.parentElement;
+    if (container) {
       if (document.fullscreenElement) {
         document.exitFullscreen();
       } else {
-        videoRef.current.requestFullscreen();
+        container.requestFullscreen();
       }
     }
   };
@@ -94,9 +136,10 @@ export function CustomVideoPlayer({ src }: { src: string }) {
   };
 
   return (
-    <div 
+    <div
       className="relative w-full h-full max-h-[85vh] bg-black rounded-2xl overflow-hidden group"
       onMouseMove={resetControlsTimeout}
+      onTouchStart={resetControlsTimeout}
       onMouseLeave={() => isPlaying && setShowControls(false)}
       onClick={togglePlay}
     >
@@ -112,41 +155,46 @@ export function CustomVideoPlayer({ src }: { src: string }) {
       />
 
       {/* Center Play/Pause Overlay */}
-      <div 
-        className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 ${!isPlaying ? "opacity-100" : "opacity-0"}`}
+      <div
+        className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 ${
+          !isPlaying ? "opacity-100" : "opacity-0"
+        }`}
       >
         <div className="w-20 h-20 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/10">
           <Play className="w-10 h-10 text-white fill-white ml-1" />
         </div>
       </div>
 
-      {/* Controls Bar (YouTube Style) */}
-      <div 
-        className={`absolute bottom-0 left-0 right-0 px-4 pb-4 pt-12 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 ${showControls ? "opacity-100" : "opacity-0"}`}
+      {/* Controls Bar */}
+      <div
+        className={`absolute bottom-0 left-0 right-0 px-4 pb-4 pt-14 bg-gradient-to-t from-black/90 via-black/50 to-transparent transition-opacity duration-300 ${
+          showControls || isScrubbing ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Progress Bar */}
-        <div className="relative w-full h-1.5 bg-white/20 rounded-full mb-3 cursor-pointer group/bar hover:h-2 transition-all">
-          <div 
-            className="absolute top-0 left-0 h-full bg-neon-cyan rounded-full"
-            style={{ width: `${progress}%` }}
-          />
-          <input
-            type="range"
-            min="0"
-            max="100"
-            step="0.1"
-            value={progress}
-            onChange={handleSeek}
-            onPointerDown={() => setIsScrubbing(true)}
-            onPointerUp={() => setIsScrubbing(false)}
-            onPointerCancel={() => setIsScrubbing(false)}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          />
-          {/* Scrubber thumb that appears on hover */}
-          <div 
-            className="absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-neon-cyan rounded-full opacity-0 group-hover/bar:opacity-100 shadow-[0_0_10px_#67e8f9] transition-opacity"
-            style={{ left: `calc(${progress}% - 7px)` }}
+        {/* Progress Bar — fully touch-draggable */}
+        <div
+          ref={progressBarRef}
+          className="relative w-full h-6 flex items-center cursor-pointer mb-2 touch-none"
+          onPointerDown={handleScrubStart}
+          onPointerMove={handleScrubMove}
+          onPointerUp={handleScrubEnd}
+          onPointerCancel={handleScrubEnd}
+        >
+          {/* Track background */}
+          <div className="absolute left-0 right-0 h-[5px] bg-white/20 rounded-full top-1/2 -translate-y-1/2 overflow-hidden">
+            {/* Filled track */}
+            <div
+              className="h-full bg-neon-cyan rounded-full transition-[width] duration-75 ease-linear"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          {/* Thumb / scrubber dot */}
+          <div
+            className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-neon-cyan shadow-[0_0_12px_#67e8f9] transition-transform duration-100 ${
+              isScrubbing ? "scale-125" : "scale-100"
+            }`}
+            style={{ left: `calc(${progress}% - 8px)` }}
           />
         </div>
 
@@ -159,7 +207,7 @@ export function CustomVideoPlayer({ src }: { src: string }) {
             <button onClick={toggleMute} className="text-white hover:text-neon-cyan transition-colors">
               {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
             </button>
-            <div className="text-white/80 text-sm font-mono tracking-tighter">
+            <div className="text-white/80 text-xs sm:text-sm font-mono tracking-tighter">
               {formatTime(currentTime)} <span className="opacity-50">/</span> {formatTime(duration)}
             </div>
           </div>
